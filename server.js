@@ -7,6 +7,7 @@ const HOST = '0.0.0.0';
 const PORT = Number(process.env.PORT || 8787);
 const ROOT = __dirname;
 const UPSTREAM = process.env.UPSTREAM || 'https://music-api.gdstudio.xyz/api.php';
+const MOCK_API = process.env.MOCK_API === '1';
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -36,7 +37,58 @@ function sendFile(res, filePath) {
   });
 }
 
+function handleMockApi(res, requestUrl) {
+  const type = requestUrl.searchParams.get('types');
+  const source = requestUrl.searchParams.get('source') || 'netease';
+  const keyword = requestUrl.searchParams.get('name') || '测试';
+  const id = requestUrl.searchParams.get('id') || `${source}-1`;
+
+  if (type === 'search') {
+    send(
+      res,
+      200,
+      'application/json; charset=utf-8',
+      JSON.stringify([
+        {
+          id: `${source}-1`,
+          name: `${keyword}（测试样例）`,
+          artist: ['测试歌手'],
+          album: '测试专辑',
+        },
+      ])
+    );
+    return;
+  }
+
+  if (type === 'url') {
+    send(
+      res,
+      200,
+      'application/json; charset=utf-8',
+      JSON.stringify({ id, url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' })
+    );
+    return;
+  }
+
+  if (type === 'lyric') {
+    send(
+      res,
+      200,
+      'application/json; charset=utf-8',
+      JSON.stringify({ id, lyric: '测试歌词：如果你看到这行，说明弹窗请求成功。' })
+    );
+    return;
+  }
+
+  send(res, 400, 'application/json; charset=utf-8', JSON.stringify({ error: 'unsupported_mock_type' }));
+}
+
 async function handleApi(res, requestUrl) {
+  if (MOCK_API) {
+    handleMockApi(res, requestUrl);
+    return;
+  }
+
   try {
     const query = requestUrl.searchParams.toString();
     const target = query ? `${UPSTREAM}?${query}` : UPSTREAM;
@@ -65,7 +117,7 @@ const server = http.createServer((req, res) => {
       res,
       200,
       'application/json; charset=utf-8',
-      JSON.stringify({ ok: true, app: 'music_search_omni', port: PORT, root: ROOT })
+      JSON.stringify({ ok: true, app: 'music_search_omni', port: PORT, root: ROOT, mockApi: MOCK_API })
     );
     return;
   }
@@ -93,4 +145,5 @@ const server = http.createServer((req, res) => {
 server.listen(PORT, HOST, () => {
   console.log(`music_search_omni server running at http://${HOST}:${PORT}`);
   console.log(`health check: http://127.0.0.1:${PORT}/health`);
+  console.log(`mock api: ${MOCK_API ? 'enabled' : 'disabled'}`);
 });

@@ -38,3 +38,13 @@ curl http://127.0.0.1:8787/health
 ```bash
 PORT=9000 UPSTREAM=https://your-api.example.com npm start
 ```
+
+## 测试建议（无公网依赖）
+
+可开启本地 mock 数据，避免上游 API 不稳定影响联调：
+
+```bash
+MOCK_API=1 npm start
+```
+
+然后访问 `http://localhost:8787`，搜索任意关键词即可看到结果并测试弹窗播放器与歌词加载。
