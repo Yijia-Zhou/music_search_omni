@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>全网音乐聚合搜索</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header>
+        <h1>中国主流音乐平台聚合搜索</h1>
+        <p>一次搜索网易云 / QQ 音乐 / 酷狗 / 酷我 / 咪咕（基于可替换的聚合 API）。</p>
+      </header>
+
+      <section class="search-bar">
+        <input id="keyword" type="text" placeholder="输入歌曲名 / 歌手 / 专辑" />
+        <button id="searchBtn">搜索</button>
+      </section>
+
+      <section class="filters">
+        <label><input type="checkbox" value="netease" checked /> 网易云</label>
+        <label><input type="checkbox" value="tencent" checked /> QQ音乐</label>
+        <label><input type="checkbox" value="kugou" checked /> 酷狗</label>
+        <label><input type="checkbox" value="kuwo" checked /> 酷我</label>
+        <label><input type="checkbox" value="migu" checked /> 咪咕</label>
+      </section>
+
+      <section id="status" class="status">请输入关键词开始搜索。</section>
+
+      <section>
+        <table>
+          <thead>
+            <tr>
+              <th>平台</th>
+              <th>歌曲</th>
+              <th>歌手</th>
+              <th>专辑</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="resultBody"></tbody>
+        </table>
+      </section>
+    </main>
+
+    <dialog id="playerDialog">
+      <div class="player-head">
+        <h2 id="playerTitle">播放器</h2>
+        <button id="closePlayer" class="ghost">关闭</button>
+      </div>
+      <audio id="audio" controls preload="none"></audio>
+      <p id="lyrics" class="lyrics"></p>
+      <p id="fallback" class="fallback"></p>
+    </dialog>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
